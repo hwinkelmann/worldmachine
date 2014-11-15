@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Model.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="ModelStoreContainer">
+    <EntitySet Name="Feeds" EntityType="Model.Store.Feeds" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="FeedItems" EntityType="Model.Store.FeedItems" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Tags" EntityType="Model.Store.Tags" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="FeedFeedItem" Association="Model.Store.FeedFeedItem">
+      <End Role="Feed" EntitySet="Feeds" />
+      <End Role="FeedItem" EntitySet="FeedItems" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Feeds">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="RssUrl" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="UpdateInterval" Type="real" Nullable="false" DefaultValue="60" />
+    <Property Name="LastUpdate" Type="datetime" Nullable="true" />
+  </EntityType>
+  <EntityType Name="FeedItems">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FeedId" Type="int" Nullable="false" />
+    <Property Name="Published" Type="datetime" Nullable="false" />
+    <Property Name="Url" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Guid" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Content" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Tags" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Tags">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Text" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="ItemCount" Type="int" Nullable="false" />
+  </EntityType>
+  <Association Name="FeedFeedItem">
+    <End Role="Feed" Type="Model.Store.Feeds" Multiplicity="1" />
+    <End Role="FeedItem" Type="Model.Store.FeedItems" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Feed">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="FeedItem">
+        <PropertyRef Name="FeedId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+        <EntityContainer Name="ModelContainer" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Feeds" EntityType="Model.Feed" />
+          <EntitySet Name="FeedItems" EntityType="Model.FeedItem" />
+          <AssociationSet Name="FeedFeedItem" Association="Model.FeedFeedItem">
+            <End Role="Feed" EntitySet="Feeds" />
+            <End Role="FeedItem" EntitySet="FeedItems" />
+          </AssociationSet>
+          <EntitySet Name="Tags" EntityType="Model.Tag" />
+        </EntityContainer>
+        <EntityType Name="Feed">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" />
+          <Property Name="RssUrl" Type="String" Nullable="false" />
+          <Property Name="UpdateInterval" Type="Single" Nullable="false" DefaultValue="60" />
+          <Property Name="LastUpdate" Type="DateTime" Nullable="true" />
+          <NavigationProperty Name="FeedItem" Relationship="Model.FeedFeedItem" FromRole="Feed" ToRole="FeedItem" />
+        </EntityType>
+        <EntityType Name="FeedItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Feed" Relationship="Model.FeedFeedItem" FromRole="FeedItem" ToRole="Feed" />
+          <Property Name="FeedId" Type="Int32" Nullable="false" />
+          <Property Name="Published" Type="DateTime" Nullable="false" />
+          <Property Name="Url" Type="String" Nullable="false" />
+          <Property Name="Guid" Type="String" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" />
+          <Property Name="Content" Type="String" Nullable="false" />
+          <Property Name="Tags" Type="String" Nullable="false" />
+        </EntityType>
+        <Association Name="FeedFeedItem">
+          <End Type="Model.Feed" Role="Feed" Multiplicity="1" />
+          <End Type="Model.FeedItem" Role="FeedItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Feed">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FeedItem">
+              <PropertyRef Name="FeedId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Tag">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Text" Type="String" Nullable="false" />
+          <Property Name="ItemCount" Type="Int32" Nullable="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ModelStoreContainer" CdmEntityContainer="ModelContainer">
+    <EntitySetMapping Name="Feeds">
+      <EntityTypeMapping TypeName="IsTypeOf(Model.Feed)">
+        <MappingFragment StoreEntitySet="Feeds">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="RssUrl" ColumnName="RssUrl" />
+          <ScalarProperty Name="UpdateInterval" ColumnName="UpdateInterval" />
+          <ScalarProperty Name="LastUpdate" ColumnName="LastUpdate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="FeedItems">
+      <EntityTypeMapping TypeName="IsTypeOf(Model.FeedItem)">
+        <MappingFragment StoreEntitySet="FeedItems">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="FeedId" ColumnName="FeedId" />
+          <ScalarProperty Name="Published" ColumnName="Published" />
+          <ScalarProperty Name="Url" ColumnName="Url" />
+          <ScalarProperty Name="Guid" ColumnName="Guid" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Content" ColumnName="Content" />
+          <ScalarProperty Name="Tags" ColumnName="Tags" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Tags">
+      <EntityTypeMapping TypeName="IsTypeOf(Model.Tag)">
+        <MappingFragment StoreEntitySet="Tags">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Text" ColumnName="Text" />
+          <ScalarProperty Name="ItemCount" ColumnName="ItemCount" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
