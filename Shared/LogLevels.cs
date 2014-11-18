@@ -12,7 +12,8 @@ namespace Shared
         Informative = 1,
         Notice = 2,
         SuccessAudit = 3,
-        Error = 4,
-        Critical = 5
+        Warning = 4,
+        Error = 5,
+        Critical = 6
     }
 }

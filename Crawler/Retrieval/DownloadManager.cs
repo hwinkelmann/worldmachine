@@ -23,7 +23,7 @@ namespace Crawler.Retrieval
 
         List<ItemDownload<T>> itemsToFetch = new List<ItemDownload<T>>();
 
-        Dictionary<String, DateTime> lastRequestPerDomain = new Dictionary<string, DateTime>();
+        static Dictionary<String, DateTime> lastDomainRequest = new Dictionary<string, DateTime>();
 
         Timer timer = null;
         #endregion
@@ -39,11 +39,14 @@ namespace Crawler.Retrieval
         internal void Enqueue(Uri uri, T context)
         {
             lock (itemsToFetch)
-                itemsToFetch.Add(new ItemDownload<T>()
-                {
-                    Uri = uri,
-                    UserContext = context
-                });
+                if (itemsToFetch.Where(i => i.Uri.Equals(uri)).Any())
+                    return;
+
+            itemsToFetch.Add(new ItemDownload<T>()
+            {
+                Uri = uri,
+                UserContext = context
+            });
         }
         #endregion
 
@@ -79,7 +82,7 @@ namespace Crawler.Retrieval
             }
             catch (Exception exc)
             {
-                Program.Logger.Log(Shared.LogLevels.Error, "DownloadManager", "Uncaught Exception", exc);
+                Program.Logger.Log(Shared.LogLevels.Error, "Uncaught Exception", exc);
             }
             finally
             {
@@ -91,9 +94,16 @@ namespace Crawler.Retrieval
 
         private void downloadItems()
         {
-            var items = itemsToFetch.Where(item => !lastRequestPerDomain.ContainsKey(item.Uri.Host) || (DateTime.UtcNow - lastRequestPerDomain[item.Uri.Host]).TotalSeconds > requestIdleTime);
+            IEnumerable<ItemDownload<T>> items;
+            lock (lastDomainRequest)
+                items = itemsToFetch.Where(item => !lastDomainRequest.ContainsKey(item.Uri.Host.ToLowerInvariant()) || (DateTime.UtcNow - lastDomainRequest[item.Uri.Host]).TotalSeconds > requestIdleTime).ToArray();
+
             foreach (var item in items)
             {
+                if (lastDomainRequest.ContainsKey(item.Uri.Host.ToLowerInvariant()) &&
+                    (DateTime.UtcNow - lastDomainRequest[item.Uri.Host.ToLowerInvariant()]).TotalSeconds < requestIdleTime)
+                    continue;
+
                 // Try to fetch file
                 String data;
 
@@ -112,7 +122,7 @@ namespace Crawler.Retrieval
                         if (OnItemFailedPermanently != null)
                             OnItemFailedPermanently(item.Uri, item.UserContext, exc);
 
-                        Program.Logger.Log(Shared.LogLevels.Notice, "DownloadManager", "Retry count exceeded for URL, dropping: " + item.Uri.ToString());
+                        Program.Logger.Log(Shared.LogLevels.Notice, "Retry count exceeded for URL, dropping: " + item.Uri.ToString());
                     }
                     else
                         if (OnItemFailed != null)
@@ -122,13 +132,21 @@ namespace Crawler.Retrieval
                 }
 
                 // Update host request timestamp
-                if (!lastRequestPerDomain.ContainsKey(item.Uri.Host))
-                    lastRequestPerDomain.Add(item.Uri.Host, DateTime.UtcNow);
-                else
-                    lastRequestPerDomain[item.Uri.Host] = DateTime.UtcNow;
+                lock (lastDomainRequest)
+                    if (!lastDomainRequest.ContainsKey(item.Uri.Host.ToLowerInvariant()))
+                        lastDomainRequest.Add(item.Uri.Host.ToLowerInvariant(), DateTime.UtcNow);
+                    else
+                        lastDomainRequest[item.Uri.Host.ToLowerInvariant()] = DateTime.UtcNow;
 
-                if (OnItemDownloaded != null)
-                    OnItemDownloaded(item.Uri, item.UserContext, data);
+                try
+                {
+                    if (OnItemDownloaded != null)
+                        OnItemDownloaded(item.Uri, item.UserContext, data);
+                }
+                catch (Exception exc)
+                {
+                    Program.Logger.Log(Shared.LogLevels.Error, "Uncaught Exception", exc);
+                }
             }
 
             lock (itemsToFetch)
