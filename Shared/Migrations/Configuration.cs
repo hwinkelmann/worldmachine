@@ -23,7 +23,10 @@ namespace Shared.Migrations
                             new Feed() { RssUrl = "http://www.globalmeatnews.com/feed/view/583698", Name = "Global Meat News" },
                             new Feed() { RssUrl = "http://www.aljazeera.com/Services/Rss/?PostingId=2007731105943979989", Name = "Al Jazeera / US" },
                             new Feed() { RssUrl = "http://www.ipsnews.net/feed/", Name = "Inter Press Service" },
-                            new Feed() { RssUrl = "http://www.abc.net.au/news/feed/51120/rss.xml", Name = "ABC News / AU", UpdateInterval = 30 }
+                            new Feed() { RssUrl = "http://www.abc.net.au/news/feed/51120/rss.xml", Name = "ABC News / AU", UpdateInterval = 30 },
+                            new Feed() { RssUrl = "http://www.vice.com/en-uk/rss", Name = "The Vice / UK" },
+                            new Feed() { RssUrl = "http://feeds.wired.com/wired/index", Name = "Wired - Top Stories / US" },
+                            new Feed() { RssUrl = "http://feeds.feedburner.com/IeeeSpectrum?format=xml", Name = "IEEE Spectrum / US" }
                          );
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data. E.g.

@@ -94,12 +94,15 @@ namespace Crawler.Retrieval
 
         private void downloadItems()
         {
-            IEnumerable<ItemDownload<T>> items;
-            lock (lastDomainRequest)
-                items = itemsToFetch.Where(item => !lastDomainRequest.ContainsKey(item.Uri.Host.ToLowerInvariant()) || (DateTime.UtcNow - lastDomainRequest[item.Uri.Host]).TotalSeconds > requestIdleTime).ToArray();
-
-            foreach (var item in items)
+            while (true)
             {
+                ItemDownload<T> item;
+                lock (lastDomainRequest)
+                    item = itemsToFetch.Where(i => !lastDomainRequest.ContainsKey(i.Uri.Host.ToLowerInvariant()) || (DateTime.UtcNow - lastDomainRequest[i.Uri.Host]).TotalSeconds > requestIdleTime).FirstOrDefault();
+
+                if (item == null)
+                    break;
+
                 if (lastDomainRequest.ContainsKey(item.Uri.Host.ToLowerInvariant()) &&
                     (DateTime.UtcNow - lastDomainRequest[item.Uri.Host.ToLowerInvariant()]).TotalSeconds < requestIdleTime)
                     continue;
@@ -147,10 +150,10 @@ namespace Crawler.Retrieval
                 {
                     Program.Logger.Log(Shared.LogLevels.Error, "Uncaught Exception", exc);
                 }
-            }
 
-            lock (itemsToFetch)
-                itemsToFetch = itemsToFetch.Where(item => item.Retry < maxRetryCount).ToList();
+                lock (itemsToFetch)
+                    itemsToFetch = itemsToFetch.Where(i => i.Retry < maxRetryCount).ToList();
+            }
         }
     }
 }

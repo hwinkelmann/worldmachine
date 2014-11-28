@@ -10,6 +10,19 @@ namespace Shared.Entities
 {
     public class FeedItem
     {
+        public FeedItem()
+        {
+            State = States.Discovered;
+        }
+
+        public enum States
+        {
+            Discovered = 0,
+            Fetched = 1,
+            Failed = 2,
+            FailedInvalidHtml = 3
+        };
+
         [Key]
         public int Id { get; set; }
         public int FeedId { get; set; }
@@ -19,6 +32,9 @@ namespace Shared.Entities
         public String Title { get; set; }
         public String Content { get; set; }
         public String Tags { get; set; }
+        public States State { get; set; }
+        public String Author { get; set; }
+        public String Copyright { get; set; }
 
         [ForeignKey("FeedId")]
         public virtual Feed Feed { get; set; }
