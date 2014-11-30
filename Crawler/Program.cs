@@ -175,9 +175,6 @@ namespace Crawler
                         return;
                     }
 
-                    TestParser parser = new TestParser();
-                    parser.Parse(doc, item);
-
                 }
                 finally
                 {
