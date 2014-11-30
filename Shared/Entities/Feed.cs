@@ -14,6 +14,7 @@ namespace Shared.Entities
             UpdateInterval = 60;
             FeedItem = new HashSet<FeedItem>();
             Enabled = true;
+            ParserId = 0;
         }
 
         public Feed(float UpdateInterval = 60)
@@ -33,5 +34,9 @@ namespace Shared.Entities
         public virtual ICollection<FeedItem> FeedItem { get; set; }
 
         public bool Enabled { get; set; }
+
+        public int ParserId { get; set; }
+
+        public String ParserConfiguration { get; set; }
     }
 }
