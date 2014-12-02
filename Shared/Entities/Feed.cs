@@ -35,6 +35,11 @@ namespace Shared.Entities
 
         public bool Enabled { get; set; }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public int ParserId { get; set; }
 
         public String ParserConfiguration { get; set; }

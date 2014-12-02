@@ -14,6 +14,16 @@ namespace Crawler.Parsers
     {
         public abstract void Parse(HtmlDocument doc, FeedItem item);
 
+        public static String SanitizeText(String text)
+        {
+            text = WebUtility.HtmlDecode(text.Trim());
+
+            while (text != text.Replace("\n\n", "\n"))
+                text = text.Replace("\n\n", "\n");
+
+            return text;
+        }
+
         protected void SetArticleText(FeedItem item, HtmlNodeCollection nodes)
         {
             // The following line of code
@@ -23,7 +33,7 @@ namespace Crawler.Parsers
             String content = String.Join("\n", nodes.OrderBy(n => n.StreamPosition).Select(n => n.InnerText));
 
             // Sanitize article text
-            content = WebUtility.HtmlDecode(content);
+            content = SanitizeText(content);
 
             item.Content = content;
         }

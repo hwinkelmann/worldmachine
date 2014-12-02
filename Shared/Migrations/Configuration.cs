@@ -22,7 +22,7 @@ namespace Shared.Migrations
                             //new Feed() { RssUrl = "http://www.theregister.co.uk/headlines.atom", Name = "The Register / UK" },
                             //new Feed() { RssUrl = "http://www.huffingtonpost.com/feeds/index.xml", Name = "Huffington Post / US" },
                             //new Feed() { RssUrl = "http://www.globalmeatnews.com/feed/view/583698", Name = "Global Meat News" },
-                            //new Feed() { RssUrl = "http://www.aljazeera.com/Services/Rss/?PostingId=2007731105943979989", Name = "Al Jazeera / US" },
+                            new Feed() { RssUrl = "http://www.aljazeera.com/Services/Rss/?PostingId=2007731105943979989", Name = "Al Jazeera / US", ParserConfiguration = JsonConvert.SerializeObject(new { XpathTags = "//table[@class=\"OCalaisBox\"]//li/a" }) },
                             //new Feed() { RssUrl = "http://www.ipsnews.net/feed/", Name = "Inter Press Service" },
                             //new Feed() { RssUrl = "http://www.abc.net.au/news/feed/51120/rss.xml", Name = "ABC News / AU", UpdateInterval = 30 },
                             //new Feed() { RssUrl = "http://www.vice.com/en-uk/rss", Name = "The Vice / UK" },
