@@ -34,7 +34,6 @@ namespace Shared.Entities
         public String Tags { get; set; }
         public States State { get; set; }
         public String Author { get; set; }
-        public String Copyright { get; set; }
 
         [ForeignKey("FeedId")]
         public virtual Feed Feed { get; set; }

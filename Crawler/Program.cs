@@ -9,7 +9,6 @@ using Crawler.Retrieval;
 using Shared.Entities;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
-using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
@@ -33,7 +32,7 @@ namespace Crawler
 
             // Request items still waiting to be fetched
             using (Context context = new Context())
-                foreach (var item in context.FeedItems.Where(i => i.State == FeedItem.States.Discovered))
+                foreach (var item in context.FeedItems.Where(i => i.State == FeedItem.States.Discovered && i.Feed.Enabled))
                     try
                     {
                         itemDownloadManager.Enqueue(new Uri(item.Url), item);
@@ -75,7 +74,18 @@ namespace Crawler
         {
             using (Context context = new Context())
             {
-                var feed = SyndicationFeed.Load(XDocument.Parse(body).CreateReader());
+                nJupiter.Web.Syndication.IFeed feed;
+
+                try
+                {
+                    using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(body)))
+                        feed = nJupiter.Web.Syndication.FeedReader.GetFeed(ms, uri);
+                }
+                catch (Exception exc)
+                {
+                    Logger.Log(LogLevels.Error, "Could not parse " + uri, exc);
+                    return;
+                }
 
                 var parsedItemGuids = feed.Items.Select(f => getGuid(f)).Distinct().ToArray();
                 var existingItemGuids = context.FeedItems.Where(i => parsedItemGuids.Contains(i.Guid)).Select(i => i.Guid);
@@ -93,12 +103,11 @@ namespace Crawler
                     {
                         FeedId = entity.Id,
                         Guid = getGuid(item),
-                        Published = (item.PublishDate.UtcDateTime == DateTime.MinValue) ? DateTime.UtcNow : item.PublishDate.UtcDateTime,
-                        Title = item.Title.Text,
+                        Published = (item.PublishDate == DateTime.MinValue) ? DateTime.UtcNow : item.PublishDate,
+                        Title = item.Title,
                         State = FeedItem.States.Discovered,
-                        Author = (item.Authors != null)? String.Join(", ", item.Authors.Select(a=>a.Name)) : null,
-                        Copyright = (item.Copyright != null)? item.Copyright.Text : null,
-                        Url = item.Links.FirstOrDefault().Uri.ToString()
+                        Author = (item.Author != null)? item.Author.Name : null,
+                        Url = item.Uri.ToString()
                     };
 
                     context.FeedItems.Add(itemEntity);
@@ -141,7 +150,10 @@ namespace Crawler
                         continue;
                     }
                     feedDownloadManager.Enqueue(uri, feed);
+                    feed.LastUpdate = DateTime.UtcNow;
                 }
+
+                context.SaveChanges();
             }
         }
         #endregion
@@ -149,7 +161,7 @@ namespace Crawler
         #region Process Feed Items
         static void onItemDownloaded(Uri uri, FeedItem _item, string body)
         {
-            Program.Logger.Log(LogLevels.Informative, "Download complete: " + uri);
+            //Program.Logger.Log(LogLevels.Informative, "Download complete: " + uri);
 
             // Grab a fresh entity
             using (Context context = new Context())
@@ -175,6 +187,13 @@ namespace Crawler
                         return;
                     }
 
+                    // Create parser and use it to extract tags and content
+                    var parser = Parsers.ParserBase.CreateParser(item.Feed.ParserId, item.Feed.ParserConfiguration);
+                    parser.Parse(doc, item);
+
+                    String[] tags = (item.Tags == null)? new String[0] : Newtonsoft.Json.JsonConvert.DeserializeObject<String[]>(item.Tags);
+                    String log = String.Format("{3}: {0} ({1} tags, {2} words)", item.Title, tags.Length, item.Content.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length, item.Feed.Name);
+                    Logger.Log(LogLevels.SuccessAudit, log);
                 }
                 finally
                 {
@@ -186,12 +205,12 @@ namespace Crawler
         #endregion
 
         #region Helpers
-        private static string getGuid(SyndicationItem item)
+        private static string getGuid(nJupiter.Web.Syndication.IFeedItem item)
         {
             if (!String.IsNullOrEmpty(item.Id))
                 return item.Id;
 
-            return item.Links.OrderBy(l=>l.Length).FirstOrDefault().ToString();
+            return item.Uri.ToString();
         }
         #endregion
     }

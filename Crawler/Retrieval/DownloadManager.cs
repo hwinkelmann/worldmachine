@@ -152,7 +152,7 @@ namespace Crawler.Retrieval
                 }
 
                 lock (itemsToFetch)
-                    itemsToFetch = itemsToFetch.Where(i => i.Retry < maxRetryCount).ToList();
+                    itemsToFetch = itemsToFetch.Where(i => i.Retry < maxRetryCount && i.Uri != item.Uri).ToList();
             }
         }
     }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Crawler.Parsers
@@ -13,16 +14,6 @@ namespace Crawler.Parsers
     public abstract class ParserBase
     {
         public abstract void Parse(HtmlDocument doc, FeedItem item);
-
-        public static String SanitizeText(String text)
-        {
-            text = WebUtility.HtmlDecode(text.Trim());
-
-            while (text != text.Replace("\n\n", "\n"))
-                text = text.Replace("\n\n", "\n");
-
-            return text;
-        }
 
         protected void SetArticleText(FeedItem item, HtmlNodeCollection nodes)
         {
@@ -45,9 +36,11 @@ namespace Crawler.Parsers
         /// <param name="nodes">Nodes containing the tag text</param>
         protected void AddTags(FeedItem item, HtmlNodeCollection nodes)
         {
+            if (nodes == null)
+                return;
+
             foreach (var node in nodes)
                 AddTag(item, node.InnerText.Trim().ToLowerInvariant());
-
         }
 
         /// <summary>
@@ -60,7 +53,39 @@ namespace Crawler.Parsers
         {
             List<String> tags = (item.Tags != null) ? JsonConvert.DeserializeObject<List<String>>(item.Tags) : new List<String>();
             tags.Add(tag);
-            item.Tags = JsonConvert.SerializeObject(tags);
+            item.Tags = JsonConvert.SerializeObject(tags.Distinct());
+        }
+
+        /// <summary>
+        /// Sanitizes text retrieved from the web
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static String SanitizeText(String text)
+        {
+            text = WebUtility.HtmlDecode(text.Trim());
+
+            while (text != text.Replace("\n\n", "\n"))
+                text = text.Replace("\n\n", "\n");
+
+            // Get rid of HTML comments
+            // https://stackoverflow.com/questions/10656123/regular-expression-remove-html-comment-spanning-multiple-line-breaks
+            text = Regex.Replace(text, "<!--.*?-->", "", RegexOptions.Singleline);
+
+            return text;
+        }
+
+        public static ParserBase CreateParser(int parserId, String jsonConfiguration)
+        {
+            switch (parserId)
+            {
+                case 0:
+                    return new XpathParser(jsonConfiguration);
+
+                default:
+                    throw new Exception("Invalid Parser ID");
+            }
+
         }
     }
 }
