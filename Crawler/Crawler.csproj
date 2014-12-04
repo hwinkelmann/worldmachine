@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parsers\ParserBase.cs" />
+    <Compile Include="Parsers\TheRegisterParser.cs" />
     <Compile Include="Parsers\XpathParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

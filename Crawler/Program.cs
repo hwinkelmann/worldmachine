@@ -27,6 +27,9 @@ namespace Crawler
 
         static void Main(string[] args)
         {
+            using (Context context = new Context())
+                context.Database.CreateIfNotExists();
+
             itemDownloadManager.OnItemDownloaded += onItemDownloaded;
             feedDownloadManager.OnItemDownloaded += onFeedDownloaded;
 

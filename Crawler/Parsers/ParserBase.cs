@@ -17,6 +17,10 @@ namespace Crawler.Parsers
 
         protected void SetArticleText(FeedItem item, HtmlNodeCollection nodes)
         {
+            System.Diagnostics.Debug.Assert(item != null, "item is null, but must not!");
+            if (nodes == null)
+                return;
+
             // The following line of code
             //  - sort nodes by their position in the HTML document,
             //  - grabs inner text and
@@ -54,6 +58,7 @@ namespace Crawler.Parsers
             List<String> tags = (item.Tags != null) ? JsonConvert.DeserializeObject<List<String>>(item.Tags) : new List<String>();
             tags.Add(tag);
             item.Tags = JsonConvert.SerializeObject(tags.Distinct());
+            item.TagCount = tags.Distinct().Count();
         }
 
         /// <summary>
@@ -81,6 +86,9 @@ namespace Crawler.Parsers
             {
                 case 0:
                     return new XpathParser(jsonConfiguration);
+
+                case 1:
+                    return new TheRegisterParser();
 
                 default:
                     throw new Exception("Invalid Parser ID");
