@@ -14,5 +14,6 @@ namespace Crawler.Retrieval
         internal Uri Uri;
         internal T UserContext;
         internal int Retry = 0;
+        internal int Priority = 0;
     }
 }

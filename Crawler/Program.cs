@@ -49,7 +49,7 @@ namespace Crawler
             Timer timer = new Timer((state) =>
             {
                 checkFeeds();
-            }, null, TimeSpan.TicksPerMinute, Timeout.Infinite);
+            }, null, TimeSpan.TicksPerMinute, TimeSpan.TicksPerMinute);
 
             Console.ReadLine();
 
@@ -135,7 +135,7 @@ namespace Crawler
         {
             using (Context context = new Context())
             {
-                var feeds = context.Feeds.Where(feed => feed.Enabled && feed.LastUpdate == null || DbFunctions.DiffMinutes(DateTime.Now, feed.LastUpdate.Value) > feed.UpdateInterval).ToArray();
+                var feeds = context.Feeds.Where(feed => feed.Enabled && (feed.LastUpdate == null || DbFunctions.DiffMinutes(feed.LastUpdate.Value, DateTime.UtcNow) > feed.UpdateInterval)).ToArray();
 
                 foreach (var feed in feeds)
                 {
@@ -152,7 +152,7 @@ namespace Crawler
                         context.SaveChanges();
                         continue;
                     }
-                    feedDownloadManager.Enqueue(uri, feed);
+                    feedDownloadManager.Enqueue(uri, feed, 1);
                     feed.LastUpdate = DateTime.UtcNow;
                 }
 
@@ -195,7 +195,9 @@ namespace Crawler
                     parser.Parse(doc, item);
 
                     String[] tags = (item.Tags == null)? new String[0] : Newtonsoft.Json.JsonConvert.DeserializeObject<String[]>(item.Tags);
-                    String log = String.Format("{3}: {0} ({1} tags, {2} words)", item.Title, tags.Length, item.Content.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length, item.Feed.Name);
+                    int numWords = (item.Content == null) ? 0 : item.Content.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
+                    String log = String.Format("{3}: {0} ({1} tags, {2} words)", item.Title, tags.Length, numWords, item.Feed.Name);
+                    
                     Logger.Log(LogLevels.SuccessAudit, log);
                 }
                 finally

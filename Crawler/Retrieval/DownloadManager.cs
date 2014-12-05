@@ -36,7 +36,7 @@ namespace Crawler.Retrieval
         internal event ItemFailedHandler OnItemFailed;
         internal event ItemFailedHandler OnItemFailedPermanently;
 
-        internal void Enqueue(Uri uri, T context)
+        internal void Enqueue(Uri uri, T context, int priority = 0)
         {
             lock (itemsToFetch)
                 if (itemsToFetch.Where(i => i.Uri.Equals(uri)).Any())
@@ -45,7 +45,8 @@ namespace Crawler.Retrieval
             itemsToFetch.Add(new ItemDownload<T>()
             {
                 Uri = uri,
-                UserContext = context
+                UserContext = context,
+                Priority = priority
             });
         }
         #endregion
@@ -98,7 +99,7 @@ namespace Crawler.Retrieval
             {
                 ItemDownload<T> item;
                 lock (lastDomainRequest)
-                    item = itemsToFetch.Where(i => !lastDomainRequest.ContainsKey(i.Uri.Host.ToLowerInvariant()) || (DateTime.UtcNow - lastDomainRequest[i.Uri.Host]).TotalSeconds > requestIdleTime).FirstOrDefault();
+                    item = itemsToFetch.Where(i => !lastDomainRequest.ContainsKey(i.Uri.Host.ToLowerInvariant()) || (DateTime.UtcNow - lastDomainRequest[i.Uri.Host]).TotalSeconds > requestIdleTime).OrderByDescending(p => p.Priority).FirstOrDefault();
 
                 if (item == null)
                     break;
