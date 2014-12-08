@@ -49,7 +49,7 @@ namespace Crawler
             Timer timer = new Timer((state) =>
             {
                 checkFeeds();
-            }, null, TimeSpan.TicksPerMinute, TimeSpan.TicksPerMinute);
+            }, null, 60000, 60000);
 
             Console.ReadLine();
 
@@ -198,7 +198,7 @@ namespace Crawler
                     int numWords = (item.Content == null) ? 0 : item.Content.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
                     String log = String.Format("{3}: {0} ({1} tags, {2} words)", item.Title, tags.Length, numWords, item.Feed.Name);
                     
-                    Logger.Log(LogLevels.SuccessAudit, log);
+                    Logger.Log(LogLevels.Informative, log);
                 }
                 finally
                 {
