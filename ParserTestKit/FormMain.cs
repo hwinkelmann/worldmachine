@@ -136,5 +136,40 @@ namespace ParserTestKit
                 button2_Click(sender, e);
             }
         }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            using (WebClient client = new WebClient())
+            {
+                currentFeed = nJupiter.Web.Syndication.FeedReader.GetFeed(new Uri(textBox2.Text)).Items.ToArray();
+
+                listBoxItems.Items.Clear();
+                listBoxItems.Items.AddRange(currentFeed.Select(d => d.Title).ToArray());
+            }
+        }
+
+        private void Export_Click(object sender, EventArgs e)
+        {
+            dynamic obj = new
+            {
+                XpathTags = textBoxTagXpath.Text,
+                XpathContent = textBoxTextXPath.Text
+            };
+
+            Clipboard.SetText(Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            dynamic obj = new
+            {
+                XpathTags = textBoxTagXpath.Text,
+                XpathContent = textBoxTextXPath.Text
+            };
+
+            String json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            json = json.Replace("\\", "\\\\");
+            Clipboard.SetText(Newtonsoft.Json.JsonConvert.SerializeObject(json));
+        }
     }
 }

@@ -40,11 +40,14 @@
             this.button1 = new System.Windows.Forms.Button();
             this.textBoxTagXpath = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.textBoxText = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.textBoxTextXPath = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.Export = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -54,9 +57,9 @@
             this.listBoxFeeds.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.listBoxFeeds.FormattingEnabled = true;
-            this.listBoxFeeds.Location = new System.Drawing.Point(12, 30);
+            this.listBoxFeeds.Location = new System.Drawing.Point(12, 56);
             this.listBoxFeeds.Name = "listBoxFeeds";
-            this.listBoxFeeds.Size = new System.Drawing.Size(130, 446);
+            this.listBoxFeeds.Size = new System.Drawing.Size(130, 420);
             this.listBoxFeeds.TabIndex = 0;
             this.listBoxFeeds.SelectedValueChanged += new System.EventHandler(this.listBoxFeeds_SelectedValueChanged);
             // 
@@ -93,7 +96,7 @@
             // 
             this.buttonOpenInBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOpenInBrowser.Enabled = false;
-            this.buttonOpenInBrowser.Location = new System.Drawing.Point(1085, 30);
+            this.buttonOpenInBrowser.Location = new System.Drawing.Point(841, 30);
             this.buttonOpenInBrowser.Name = "buttonOpenInBrowser";
             this.buttonOpenInBrowser.Size = new System.Drawing.Size(183, 23);
             this.buttonOpenInBrowser.TabIndex = 5;
@@ -107,7 +110,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Location = new System.Drawing.Point(533, 33);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(546, 20);
+            this.textBox1.Size = new System.Drawing.Size(302, 20);
             this.textBox1.TabIndex = 6;
             // 
             // groupBox1
@@ -184,6 +187,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Text XPath";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 46);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(0, 13);
+            this.label4.TabIndex = 5;
+            // 
             // textBoxText
             // 
             this.textBoxText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -226,19 +237,44 @@
             this.textBoxTextXPath.Text = "//*[@class=\"topics\"]/a";
             this.textBoxTextXPath.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxTextXPath_KeyDown);
             // 
-            // label4
+            // textBox2
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 46);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(0, 13);
-            this.label4.TabIndex = 5;
+            this.textBox2.Location = new System.Drawing.Point(13, 33);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(129, 20);
+            this.textBox2.TabIndex = 10;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // Export
+            // 
+            this.Export.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Export.Location = new System.Drawing.Point(1030, 30);
+            this.Export.Name = "Export";
+            this.Export.Size = new System.Drawing.Size(66, 23);
+            this.Export.TabIndex = 5;
+            this.Export.Text = "Export";
+            this.Export.UseVisualStyleBackColor = true;
+            this.Export.Click += new System.EventHandler(this.Export_Click);
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(1102, 31);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(155, 23);
+            this.button3.TabIndex = 11;
+            this.button3.Text = "Export escaped";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1280, 491);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.Export);
+            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.textBox1);
@@ -277,6 +313,9 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBoxTextXPath;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button Export;
+        private System.Windows.Forms.Button button3;
     }
 }
 
