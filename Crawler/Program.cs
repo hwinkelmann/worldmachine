@@ -82,7 +82,9 @@ namespace Crawler
                 try
                 {
                     using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(body)))
-                        feed = nJupiter.Web.Syndication.FeedReader.GetFeed(ms, uri);
+                        using (StreamReader reader = new StreamReader(ms, Encoding.UTF8))
+                            using (XmlReader xmlReader = XmlReader.Create(reader))
+                                feed = nJupiter.Web.Syndication.FeedReader.GetFeed(uri, xmlReader);
                 }
                 catch (Exception exc)
                 {
