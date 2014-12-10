@@ -29,7 +29,7 @@ namespace Crawler.Retrieval
         #endregion
 
         #region Interface
-        internal delegate void ItemDownloadHandler(Uri uri, T context, String body);
+        internal delegate void ItemDownloadHandler(Uri uri, T context, byte[] body);
         internal event ItemDownloadHandler OnItemDownloaded;
 
         internal delegate void ItemFailedHandler(Uri uri, T context, Exception exc);
@@ -98,8 +98,9 @@ namespace Crawler.Retrieval
             while (true)
             {
                 ItemDownload<T> item;
-                lock (lastDomainRequest)
-                    item = itemsToFetch.Where(i => !lastDomainRequest.ContainsKey(i.Uri.Host.ToLowerInvariant()) || (DateTime.UtcNow - lastDomainRequest[i.Uri.Host]).TotalSeconds > requestIdleTime).OrderByDescending(p => p.Priority).FirstOrDefault();
+                lock (itemsToFetch)
+                    lock (lastDomainRequest)
+                        item = itemsToFetch.Where(i => !lastDomainRequest.ContainsKey(i.Uri.Host.ToLowerInvariant()) || (DateTime.UtcNow - lastDomainRequest[i.Uri.Host]).TotalSeconds > requestIdleTime).OrderByDescending(p => p.Priority).FirstOrDefault();
 
                 if (item == null)
                     break;
@@ -109,13 +110,13 @@ namespace Crawler.Retrieval
                     continue;
 
                 // Try to fetch file
-                String data;
+                byte[] data;
 
                 try
                 {
                     using (WebClient client = new WebClient())
                     {
-                        data = client.DownloadString(item.Uri);
+                        data = client.DownloadData(item.Uri);
                     }
                 }
                 catch (Exception exc)

@@ -73,7 +73,7 @@ namespace Crawler
         }
 
         #region Update Feeds
-        static void onFeedDownloaded(Uri uri, Feed entity, string body)
+        static void onFeedDownloaded(Uri uri, Feed entity, byte[] data)
         {
             using (Context context = new Context())
             {
@@ -81,10 +81,8 @@ namespace Crawler
 
                 try
                 {
-                    using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(body)))
-                        using (StreamReader reader = new StreamReader(ms, Encoding.UTF8))
-                            using (XmlReader xmlReader = XmlReader.Create(reader))
-                                feed = nJupiter.Web.Syndication.FeedReader.GetFeed(uri, xmlReader);
+                    using (MemoryStream ms = new MemoryStream(data))
+                        feed = nJupiter.Web.Syndication.FeedReader.GetFeed(ms, uri);
                 }
                 catch (Exception exc)
                 {
@@ -164,7 +162,7 @@ namespace Crawler
         #endregion
 
         #region Process Feed Items
-        static void onItemDownloaded(Uri uri, FeedItem _item, string body)
+        static void onItemDownloaded(Uri uri, FeedItem _item, byte[] data)
         {
             //Program.Logger.Log(LogLevels.Informative, "Download complete: " + uri);
 
@@ -183,7 +181,7 @@ namespace Crawler
                     try
                     {
                         doc = new HtmlAgilityPack.HtmlDocument();
-                        doc.LoadHtml(body);
+                        doc.LoadHtml(Encoding.UTF8.GetString(data));
                     }
                     catch (Exception exc)
                     {
