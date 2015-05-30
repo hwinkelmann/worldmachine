@@ -31,7 +31,8 @@ namespace Shared.Migrations
                             new Feed() { RssUrl = "http://www.salon.com/feed/rss/", Name = "Salon.com / US", ParserConfiguration = JsonConvert.SerializeObject(new { XpathTags = "//*[@class=\\\"topics\\\"]/a", XpathContent = "//div[contains(@title, 'Page ')]//p" }) },
                             new Feed() { RssUrl = "http://www.spectator.co.uk/feed/", Name = "The Spectator (UK)", ParserConfiguration = JsonConvert.SerializeObject(new { XpathTags = "//span[@class=\"all-taxonomies\"]/a", XpathContent = "//div[@class=\"article-body\"]/p" }) },
                             new Feed() { RssUrl = "http://www.business-standard.com/rss/management-columns-10705.rss", Name = "Business Standard (IN)", ParserConfiguration = "{\"XpathTags\":\"//div[@class=\\\"article bdrBNone mT15\\\"]/div[@class=\\\"readmore_tagBG fLt\\\"]/a\",\"XpathContent\":\"//p[@itemprop=\\\"articleBody\\\"]\"}" },
-                            new Feed() { RssUrl = "http://feeds.mashable.com/Mashable", Name = "Mashable", ParserConfiguration = JsonConvert.SerializeObject(new { XpathTags = "//footer[@class=\"article-topics\"]/a", XpathContent = "//section[@class=\"article-content\"]/*" }) }
+                            new Feed() { RssUrl = "http://feeds.mashable.com/Mashable", Name = "Mashable", ParserConfiguration = JsonConvert.SerializeObject(new { XpathTags = "//footer[@class=\"article-topics\"]/a", XpathContent = "//section[@class=\"article-content\"]/*" }) },
+                            new Feed() { RssUrl = "http://www.iflscience.com/rss.xml", Name="iflscience", ParserConfiguration = JsonConvert.SerializeObject(new {XpathTags = "//ul[@class=\"field-tags\"]/li/a", XpathContent = "//div[@class=\"article-content\"]"})}
                          );
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data. E.g.
